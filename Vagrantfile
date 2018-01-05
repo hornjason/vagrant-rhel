@@ -1,23 +1,28 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-tower_static_ip = '192.168.110.226'
+static_ip = '192.168.110.228'
 private_key = '~/.ssh/id_rsa'
 
 boxes = [
     {
-        :name  => "rhel7",
-        :eth1  => tower_static_ip,
+        :name  => "rhel7-test",
+        :eth1  => static_ip,
         :mem   => "2048",
         :vcpu  => "1",
         :default => true,
         :share => "/vagrant",
         :localdir => "~/projects",
       	:port => "9443",
-	      :box => "rhel7.4",
-	      :pool_id => ''
+        :box => "rhel7.4",
     }
 ]
+
+$clean_ssh_sock = <<SCRIPT
+
+[ -a /home/vagrant/.ssh/ssh_auth_sock ] && rm -rf /home/vagrant/.ssh/ssh_auth_sock
+[ -a /root/.ssh/ssh_auth_sock ] && rm -rf /root/.ssh/ssh_auth_sock
+SCRIPT
 
 required_plugins = %w( vagrant-env vagrant-hostmanager vagrant-vbguest vagrant-registration)
 required_plugins.each do |plugin|
@@ -30,10 +35,10 @@ Vagrant.configure(2) do |config|
 
     # Set machine size
     config.vm.provider :virtualbox do |vb|
-	vb.name = opts[:name]
-        vb.memory = 2048
-        vb.cpus = 1
-    	vb.linked_clone = true
+	      vb.name = opts[:name]
+        vb.memory = opts[:mem]
+        vb.cpus = opts[:vcpu]
+    	  vb.linked_clone = true
     end
 
     # Hostname management
@@ -46,7 +51,7 @@ Vagrant.configure(2) do |config|
     # Network
     config.vm.synced_folder opts[:localdir], opts[:share], type: "virtualbox"
     config.vm.network 'private_network', ip: opts[:eth1]
-    config.vm.network :forwarded_port, guest: 443, host: opts[:port]
+#    config.vm.network :forwarded_port, guest: 443, host: opts[:port]
 
     # rhel box
     #rhel_string = "rhel redhat"
@@ -56,9 +61,23 @@ Vagrant.configure(2) do |config|
 	    config.registration.password = ENV['SUB_PASS']
 	    config.registration.pools    = ENV['POOLID']
     end
-#   TODO: Add RHN REPOSlist
-#         install git wget tmux vim 
-#         update bashrc with ssh-agent
+#   TODO: AddRHN REPOSlist
+#         subscription-manager repos --enable=rhel-7-server-optional-rpms --enable=rhel-7-server-rh-common-rpms
+#         rhel-7-server-optional-fastrack-rpms
+#Repo ID:   rhel-7-server-ansible-2.4-rpms
+#Repo ID:   rhel-7-fast-datapath-rpms
+#Repo ID:   rhel-7-server-extras-rpms
+#Repo ID:   rhel-7-server-ose-3.6-rpms
+#Repo ID:   rhel-7-server-rpms
+#         install git wget tmux vim
+#         ~/.tmux.conf
+#         update bashrc with ssh-agent /vagrant/keys/*.priv
+#         ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
+#
+#
+     config.vm.provision "shell", path: "setup.sh"
+     config.vm.provision "shell", inline: $clean_ssh_sock, run: "always"
+
 #    # Ansible Tower configuration
 #    config.vm.provision "ansible" do |ansible|
 #        ansible.playbook = "playbook.yaml"
