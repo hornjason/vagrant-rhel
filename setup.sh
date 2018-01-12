@@ -5,7 +5,7 @@ rhel-7-server-optional-fastrack-rpms  rhel-7-server-ansible-2.4-rpms \
 rhel-7-fast-datapath-rpms rhel-7-server-extras-rpms rhel-7-server-ose-3.6-rpms \
 rhel-7-server-rpms"
 
-SSH_KEYS="/vagrant/keys/*.priv"
+SSH_KEYS="/vagrant/keys/*id_rsa"
 PKGS="git wget tmux vim tree"
 
 SSH_OPTIONS="ssh -A -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
@@ -15,7 +15,7 @@ SSH_OPTIONS="ssh -A -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/nu
 
 ALIAS=("alias bastion='${SSH_OPTIONS}  jthopenshiftb.eastus.cloudapp.azure.com'" 
        "alias honeywell='${SSH_OPTIONS} honeywell@40.112.212.69'" 
-       "alias honeywell-bastion='${SSH_OPTIONS} honeywell@hwlabspecb.westus.cloudapp.azure.com'")
+       "alias honeywell-bastion='${SSH_OPTIONS} honeywell@lab-spec-westus-rgb.westus.cloudapp.azure.com'")
 
 function pkgs {
   # Disable all first
@@ -37,7 +37,7 @@ if [ ! -S ~/.ssh/ssh_auth_sock ]; then
   ln -sf "$SSH_AUTH_SOCK" ~/.ssh/ssh_auth_sock
 fi
 export SSH_AUTH_SOCK=~/.ssh/ssh_auth_sock
-ssh-add -l | grep "The agent has no identities" && ssh-add ${SSH_KEYS}
+ssh-add -l | grep "The agent has no identities" && ssh-add \${SSH_KEYS}
 EOF
    mkdir ~/.ssh
 fi
@@ -56,9 +56,10 @@ function setup_ssh {
   found=$(grep -cs "Host \*" ~/.ssh/config)
   if [[ $found < 1 ]]; then
   cat >> ~/.ssh/config <<EOF
-Host \*
+Host *
    StrictHostKeyChecking=no
    UserKnownHostsFile=/dev/null
+   LogLevel QUIET
 EOF
   fi
 }
