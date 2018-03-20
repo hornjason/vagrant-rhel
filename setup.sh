@@ -2,20 +2,17 @@
 
 REPOS="rhel-7-server-optional-rpms rhel-7-server-rh-common-rpms \
 rhel-7-server-optional-fastrack-rpms  rhel-7-server-ansible-2.4-rpms \
-rhel-7-fast-datapath-rpms rhel-7-server-extras-rpms rhel-7-server-ose-3.6-rpms \
+rhel-7-fast-datapath-rpms rhel-7-server-extras-rpms rhel-7-server-ose-3.7-rpms \
 rhel-7-server-rpms"
 
 SSH_KEYS="/vagrant/keys/*.priv"
 PKGS="git wget tmux vim tree"
 
 SSH_OPTIONS="ssh -A -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
-#ALIAS="alias bastion='ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  jthopenshiftb.eastus.cloudapp.azure.com' "
-#ALIAS2="alias honeywell='ssh -A -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  honeywell@40.112.212.69'"
-#ALiAS3="alias honeywell-bastion='ssh -A -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  honeywell@hwlabspecb.westus.cloudapp.azure.com'"
 
-ALIAS=("alias bastion='${SSH_OPTIONS}  jthopenshiftb.eastus.cloudapp.azure.com'" 
-       "alias honeywell='${SSH_OPTIONS} honeywell@40.112.212.69'" 
-       "alias honeywell-bastion='${SSH_OPTIONS} honeywell@hwlabspecb.westus.cloudapp.azure.com'")
+#ALIAS=("alias test='${SSH_OPTIONS}  test.example.com'" 
+#       "alias test1='${SSH_OPTIONS} test1@test1.example.com'" 
+#       "alias test2='${SSH_OPTIONS} test2@test2.example.com")
 
 function pkgs {
   # Disable all first
