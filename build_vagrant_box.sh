@@ -1,11 +1,11 @@
 #!/bin/bash
-
+# Not needed since i've uploaded the RHEL box to jasonhorn/rhel7
+# Used as reference.
 ISO="$1"
 #NAME="$2"
 DISTRO=$(uname -a)
 # assumes iso is already downloaded
-#ISO_LINK="curl https://access.cdn.redhat.com//content/origin/files/sha256/43/431a58c8c0351803a608ffa56948c5a7861876f78ccbe784724dd8c987ff7000/rhel-server-7.5-x86_64-dvd.iso?_auth_=1512617232_6dc8f4f10487499c8478c5dcbec0ea07 -o 'rhel-server-7.5-x86_64-dvd.iso'"
-
+#ISO_LINK=
 read "RHN USERNAME"
  SUB_USER=
 read "RHN PASS"
