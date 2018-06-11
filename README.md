@@ -14,7 +14,7 @@ Vagrant installers [vagrantup.com](https://www.vagrantup.com/downloads.html)
 
 ## Vagrantfile
 Customization of the Vagrantfile is always encouraged,  by default the following is set.
- 
+``` 
 static_ip = '192.168.110.230'
 private_key = '~/.ssh/id_rsa'
 boxes = [
@@ -30,6 +30,7 @@ boxes = [
 :box => "jasonhorn/rhel7",
 }
 ]
+```
 
 ## Setup 
 The setup.sh script is provided as reference and is used to keep a consistent creation of aliases, packages and configurations.
