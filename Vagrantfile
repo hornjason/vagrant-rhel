@@ -62,20 +62,7 @@ Vagrant.configure(2) do |config|
 	    config.registration.password = ENV['SUB_PASS']
 	    config.registration.pools    = ENV['POOLID']
     end
-#   TODO: AddRHN REPOSlist
-#         subscription-manager repos --enable=rhel-7-server-optional-rpms --enable=rhel-7-server-rh-common-rpms
-#         rhel-7-server-optional-fastrack-rpms
-#Repo ID:   rhel-7-server-ansible-2.4-rpms
-#Repo ID:   rhel-7-fast-datapath-rpms
-#Repo ID:   rhel-7-server-extras-rpms
-#Repo ID:   rhel-7-server-ose-3.6-rpms
-#Repo ID:   rhel-7-server-rpms
-#         install git wget tmux vim
-#         ~/.tmux.conf
-#         update bashrc with ssh-agent /vagrant/keys/*.priv
-#         ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
-#
-#
+
      config.vm.provision "shell", path: "setup.sh"
      config.vm.provision "shell", inline: $clean_ssh_sock, run: "always"
 
