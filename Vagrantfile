@@ -1,20 +1,20 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-static_ip = '192.168.110.228'
+static_ip = '192.168.110.230'
 private_key = '~/.ssh/id_rsa'
 
 boxes = [
     {
         :name  => "rhel7-test",
         :eth1  => static_ip,
-        :mem   => "2048",
+        :mem   => "6144",
         :vcpu  => "1",
         :default => true,
         :share => "/vagrant",
         :localdir => "~/projects",
       	:port => "9443",
-        :box => "rhel7.4",
+        :box => "jasonhorn/rhel7",
     }
 ]
 
@@ -57,6 +57,7 @@ Vagrant.configure(2) do |config|
     #rhel_string = "rhel redhat"
     config.vm.box = opts[:box]
     if opts[:box].include? 'rhel'
+      # orgi ID / activation-key
 	    config.registration.username = ENV['SUB_USER']
 	    config.registration.password = ENV['SUB_PASS']
 	    config.registration.pools    = ENV['POOLID']

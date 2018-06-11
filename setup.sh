@@ -1,21 +1,19 @@
 #!/bin/env bash
 
 REPOS="rhel-7-server-optional-rpms rhel-7-server-rh-common-rpms \
-rhel-7-server-optional-fastrack-rpms  rhel-7-server-ansible-2.4-rpms \
-rhel-7-fast-datapath-rpms rhel-7-server-extras-rpms rhel-7-server-ose-3.6-rpms \
+rhel-7-server-optional-fastrack-rpms  rhel-7-server-ansible-2.5-rpms \
+rhel-7-fast-datapath-rpms rhel-7-server-extras-rpms rhel-7-server-ose-3.9-rpms \
 rhel-7-server-rpms"
 
 SSH_KEYS="/vagrant/keys/*id_rsa"
-PKGS="git wget tmux vim tree"
+PKGS="git wget tmux screen vim bash-completion tree"
 
 SSH_OPTIONS="ssh -A -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 #ALIAS="alias bastion='ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  jthopenshiftb.eastus.cloudapp.azure.com' "
 #ALIAS2="alias honeywell='ssh -A -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  honeywell@40.112.212.69'"
 #ALiAS3="alias honeywell-bastion='ssh -A -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  honeywell@hwlabspecb.westus.cloudapp.azure.com'"
 
-ALIAS=("alias bastion='${SSH_OPTIONS}  jthopenshiftb.eastus.cloudapp.azure.com'" 
-       "alias honeywell='${SSH_OPTIONS} honeywell@40.112.212.69'" 
-       "alias honeywell-bastion='${SSH_OPTIONS} honeywell@lab-spec-westus-rgb.westus.cloudapp.azure.com'")
+ALIAS=("alias bastion='${SSH_OPTIONS}  jth-testb.eastus.cloudapp.azure.com'" )
 
 function pkgs {
   # Disable all first
@@ -111,6 +109,8 @@ let g:solarized_termtrans=1
 colorscheme solarized
 EOF
 
+# install the plugins doh!
+vim +PluginInstall +qall
 }
 
 pkgs
