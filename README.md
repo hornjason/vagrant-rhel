@@ -1,3 +1,4 @@
+
 # Vagrant and RHEL
 This project is used for standing up a vagrant box running RHEL  quickly and consistently using the setup.sh to provision the box.  I've included a packer build script for reference,  you can download the latest RHEL vagrant box from jasonhorn/rhel7.  This box is also referenced in the included Vagrantfile and is available for libvirt/virtualbox.
 
@@ -11,6 +12,9 @@ export POOLID=< pool id to attach >
 
 ### Vagrant
 Vagrant installers [vagrantup.com](https://www.vagrantup.com/downloads.html) 
+
+### Vagrant libvirt
+https://github.com/vagrant-libvirt/vagrant-libvirt
 
 ## Vagrantfile
 Customization of the Vagrantfile is always encouraged,  by default the following is set.
