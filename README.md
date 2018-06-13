@@ -1,6 +1,6 @@
 
 # Vagrant and RHEL
-This project is used for standing up a vagrant box running RHEL  quickly and consistently using the setup.sh to provision the box.  I've included a packer build script for reference,  you can download the latest RHEL vagrant box for virtualbox and libvirt from jasonhorn/rhel7.  This box is also referenced in the included Vagrantfile and is available for libvirt/virtualbox.
+This project is used for standing up a vagrant box running RHEL  quickly and consistently using the setup.sh to provision the box.  I've included a packer build script for reference,  you can download the latest RHEL vagrant box for virtualbox and libvirt from jasonhorn/rhel7 which is also referenced in the included Vagrantfile.
 
 ## Pre-Reqs
 Vagrant and Virtualbox or libivrt for provisioning need to be installed with a valid RHSM account.  This Vagrant box will attempt to register with RedHat and expects the following variables be exported in your environment.
