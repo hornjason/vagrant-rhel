@@ -62,7 +62,7 @@ Vagrant.configure(2) do |config|
 	    config.registration.password = ENV['SUB_PASS']
 	    config.registration.pools    = ENV['POOLID']
       config.registration.unregister_on_halt = false
-#    end
+    end
 #   TODO: AddRHN REPOSlist
 #         subscription-manager repos --enable=rhel-7-server-optional-rpms --enable=rhel-7-server-rh-common-rpms
 #         rhel-7-server-optional-fastrack-rpms
