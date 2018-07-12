@@ -3,7 +3,7 @@
 ISO="$1"
 #NAME="$2"
 DISTRO=$(uname -a)
-ISO_LINK="curl https://access.cdn.redhat.com//content/origin/files/sha256/43/431a58c8c0351803a608ffa56948c5a7861876f78ccbe784724dd8c987ff7000/rhel-server-7.4-x86_64-dvd.iso?_auth_=1512617232_6dc8f4f10487499c8478c5dcbec0ea07 -o 'rhel-server-7.4-x86_64-dvd.iso'"
+ISO_LINK="curl https://access.cdn.redhat.com//content/origin/files/sha256/43/431a58c8c0351803a608ffa56948c5a7861876f78ccbe784724dd8c987ff7000/rhel-server-7.4-x86_64-dvd.iso?_auth_=1512617232_6dc8f4f10487499c8478c5dcbec0ea07 -o 'rhel-server-7.5-x86_64-dvd.iso'"
 
 # read "RHN USERNAME"
 #  SUB_USER=
@@ -18,7 +18,7 @@ ISO_LINK="curl https://access.cdn.redhat.com//content/origin/files/sha256/43/431
 
 
 if [[ $# < 1 ]]; then
-  echo "USAGE: $0 [/full/path/to/rhel-server-7.4-x86_64-dvd.iso ]"
+  echo "USAGE: $0 [/full/path/to/rhel-server-7.?-x86_64-dvd.iso ]"
   exit 1
 else
  ${ISO_LINK} 

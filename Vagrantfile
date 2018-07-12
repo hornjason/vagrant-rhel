@@ -1,20 +1,20 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-static_ip = '192.168.110.228'
+static_ip = '192.168.110.230'
 private_key = '~/.ssh/id_rsa'
 
 boxes = [
     {
-        :name  => "rhel7-test",
+        :name  => "rhel7-OCP",
         :eth1  => static_ip,
-        :mem   => "2048",
+        :mem   => "6144",
         :vcpu  => "1",
         :default => true,
         :share => "/vagrant",
         :localdir => "~/projects",
       	:port => "9443",
-        :box => "rhel7.4",
+        :box => "jasonhorn/rhel7",
     }
 ]
 
@@ -24,10 +24,10 @@ $clean_ssh_sock = <<SCRIPT
 [ -a /root/.ssh/ssh_auth_sock ] && rm -rf /root/.ssh/ssh_auth_sock
 SCRIPT
 
-required_plugins = %w( vagrant-env vagrant-hostmanager vagrant-vbguest vagrant-registration)
-required_plugins.each do |plugin|
-    exec "vagrant plugin install #{plugin};vagrant #{ARGV.join(" ")}" unless Vagrant.has_plugin? plugin || ARGV[0] == 'plugin'
-end
+#required_plugins = %w( vagrant-env vagrant-hostmanager vagrant-vbguest vagrant-registration)
+#required_plugins.each do |plugin|
+#    exec "vagrant plugin install #{plugin};vagrant #{ARGV.join(" ")}" unless Vagrant.has_plugin? plugin || ARGV[0] == 'plugin'
+#end
 
 Vagrant.configure(2) do |config|
   boxes.each do |opts|
@@ -56,11 +56,13 @@ Vagrant.configure(2) do |config|
     # rhel box
     #rhel_string = "rhel redhat"
     config.vm.box = opts[:box]
-    if opts[:box].include? 'rhel'
+#    if opts[:box].include? 'rhel'
+      # orgi ID / activation-key
 	    config.registration.username = ENV['SUB_USER']
 	    config.registration.password = ENV['SUB_PASS']
 	    config.registration.pools    = ENV['POOLID']
-    end
+      config.registration.unregister_on_halt = false
+#    end
 #   TODO: AddRHN REPOSlist
 #         subscription-manager repos --enable=rhel-7-server-optional-rpms --enable=rhel-7-server-rh-common-rpms
 #         rhel-7-server-optional-fastrack-rpms
