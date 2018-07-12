@@ -5,15 +5,16 @@ rhel-7-server-optional-fastrack-rpms  rhel-7-server-ansible-2.5-rpms \
 rhel-7-fast-datapath-rpms rhel-7-server-extras-rpms rhel-7-server-ose-3.9-rpms \
 rhel-7-server-rpms"
 
+# Path where keys are located for ssh-agent to add if any
 SSH_KEYS="/vagrant/keys/*id_rsa"
-PKGS="git wget tmux screen vim tree"
+PKGS="git wget tmux screen vim bash-completion tree"
 
 SSH_OPTIONS="ssh -A -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
-#ALIAS="alias bastion='ssh -A -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  jthopenshiftb.eastus.cloudapp.azure.com' "
-#ALIAS2="alias honeywell='ssh -A -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  honeywell@40.112.212.69'"
-#ALiAS3="alias honeywell-bastion='ssh -A -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  honeywell@hwlabspecb.westus.cloudapp.azure.com'"
 
 ALIAS=("alias bastion='${SSH_OPTIONS}  jth-testb.eastus.cloudapp.azure.com'" )
+#ALIAS=("alias test='${SSH_OPTIONS}  test.example.com'" 
+#       "alias test1='${SSH_OPTIONS} test1@test1.example.com'" 
+#       "alias test2='${SSH_OPTIONS} test2@test2.example.com")
 
 function pkgs {
   # Disable all first

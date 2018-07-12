@@ -56,7 +56,7 @@ Vagrant.configure(2) do |config|
     # rhel box
     #rhel_string = "rhel redhat"
     config.vm.box = opts[:box]
-#    if opts[:box].include? 'rhel'
+    if opts[:box].include? 'rhel'
       # orgi ID / activation-key
 	    config.registration.username = ENV['SUB_USER']
 	    config.registration.password = ENV['SUB_PASS']
