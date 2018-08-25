@@ -2,19 +2,16 @@
 
 REPOS="rhel-7-server-optional-rpms rhel-7-server-rh-common-rpms \
 rhel-7-server-optional-fastrack-rpms  rhel-7-server-ansible-2.5-rpms \
-rhel-7-fast-datapath-rpms rhel-7-server-extras-rpms rhel-7-server-ose-3.9-rpms \
+rhel-7-fast-datapath-rpms rhel-7-server-extras-rpms rhel-7-server-ose-3.10-rpms \
 rhel-7-server-rpms"
 
-# Path where keys are located for ssh-agent to add if any
 SSH_KEYS="/vagrant/keys/*id_rsa"
-PKGS="git wget tmux screen vim bash-completion tree"
+PKGS="git wget tmux screen vim bash-completion tree needs-restarting"
 
 SSH_OPTIONS="ssh -A -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+ALIAS=""
 
-ALIAS=("alias bastion='${SSH_OPTIONS}  jth-testb.eastus.cloudapp.azure.com'" )
-#ALIAS=("alias test='${SSH_OPTIONS}  test.example.com'" 
-#       "alias test1='${SSH_OPTIONS} test1@test1.example.com'" 
-#       "alias test2='${SSH_OPTIONS} test2@test2.example.com")
+USERS="vagrant"
 
 function pkgs {
   # Disable all first
@@ -25,60 +22,69 @@ function pkgs {
   done
 #  sleep 10
   sudo  yum install -y  ${PKGS}
+  sudo yum autoremove -y epel-release
 
 }
 
 function setup_bashrc {
-if [[ $(grep -c ssh_auth_sock ~/.bashrc) < 1 ]]; then
- cat >> ~/.bashrc <<EOF
-if [ ! -S ~/.ssh/ssh_auth_sock ]; then
-  eval `ssh-agent`
-  ln -sf "$SSH_AUTH_SOCK" ~/.ssh/ssh_auth_sock
-fi
+  if [[ $(grep -c ssh_auth_sock ${1}/.bashrc) < 1 ]]; then
+  cat >> ${1}/.bashrc <<EOF
 export SSH_AUTH_SOCK=~/.ssh/ssh_auth_sock
-ssh-add -l | grep "The agent has no identities" && ssh-add ${SSH_KEYS}
-EOF
-   mkdir ~/.ssh
+if [ ! -S ~/.ssh/ssh_auth_sock ]; then
+  eval \`ssh-agent\`
+  ln -sf "\${SSH_AUTH_SOCK}" ~/.ssh/ssh_auth_sock
+  ssh-add -l | grep "The agent has no identities" && ssh-add ${SSH_KEYS}
 fi
+EOF
+  fi
 
 
 IFS=""
 #for alias in ${ALIASES}; do
 for a in ${ALIAS[*]}; do
   echo "Adding ALIAS ${a}"
-  grep "${a}" ~/.bashrc || echo "${a}" >> ~/.bashrc
+  grep "${a}" ${1}/.bashrc || echo "${a}" >> ${1}/.bashrc
+  chown -R ${2}:${2} ${1}/.bashrc
 done
 
 }
 
 function setup_ssh {
-  found=$(grep -cs "Host \*" ~/.ssh/config)
+  mkdir ${1}/.ssh
+  chown -R ${2}:${2} ${1}/.ssh
+  found=$(grep -cs "Host \*" ${1}/.ssh/config)
   if [[ $found < 1 ]]; then
-  cat >> ~/.ssh/config <<EOF
-Host *
+  cat >> ${1}/.ssh/config <<EOF
+Host \*
    StrictHostKeyChecking=no
    UserKnownHostsFile=/dev/null
-   LogLevel QUIET
 EOF
   fi
 }
 
 function setup_tmux {
-  cat > ~/.tmux.conf <<EOF
+  cat > ${1}/.tmux.conf <<EOF
 setw -g mode-mouse on
 set -g mouse-select-pane on
 set -g mouse-resize-pane on
 set -g mouse-select-window on
 EOF
+  chown -R ${2}:${2} ${1}/.ssh
 
 }
 
 function setup_vimrc {
+  if [ ! -d "${1}/.vim/bundle/Vundle.vim" ] ; then
+    git clone https://github.com/VundleVim/Vundle.vim.git ${1}/.vim/bundle/Vundle.vim
+  fi
 
-  git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-  cd ~/.vim/bundle/ && git clone git://github.com/altercation/vim-colors-solarized.git
+  if [ ! -d "${1}/.vim/bundle/ansible-vim" ] ; then
+    cd ${1}/.vim/bundle/ && git clone https://github.com/pearofducks/ansible-vim.git
+  fi
+  chown -R ${2}:${2} ${1}/.vim
 
-  cat  > ~/.vimrc  <<EOF
+  cat  > ${1}/.vimrc  <<EOF
+
 filetype off
 
 set rtp+=~/.vim/bundle/Vundle.vim
@@ -86,7 +92,6 @@ filetype plugin indent on
 
 call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
-Plugin 'altercation/vim-colors-solarized'
 Plugin 'pearofducks/ansible-vim'
 
 call vundle#end()
@@ -110,13 +115,23 @@ let g:solarized_termtrans=1
 colorscheme solarized
 EOF
 
-# install the plugins doh!
-vim +PluginInstall +qall
 }
 
+function setup_sudo {
+  cat > /etc/sudoers.d/${2} <<EOF
+${2}        ALL=(ALL)       NOPASSWD: ALL
+EOF
+}
+
+###############
 pkgs
-setup_bashrc
-setup_ssh
-setup_tmux
-setup_vimrc
-#
+for user in ${USERS};do
+  home=/home/${user}
+  useradd -m -U -G wheel,vagrant ${user}
+  setup_bashrc ${home} ${user}
+  setup_ssh ${home} ${user}
+  setup_tmux ${home} ${user}
+  setup_vimrc ${home} ${user}
+  setup_sudo ${home} ${user}
+done
+###############

@@ -1,12 +1,12 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-static_ip = '192.168.110.230'
+static_ip = '192.168.110.215'
 private_key = '~/.ssh/id_rsa'
 
 boxes = [
     {
-        :name  => "rhel7-OCP",
+        :name  => "rhel7-cloud",
         :eth1  => static_ip,
         :mem   => "6144",
         :vcpu  => "1",
@@ -14,20 +14,32 @@ boxes = [
         :share => "/vagrant",
         :localdir => "~/projects",
       	:port => "9443",
-        :box => "jasonhorn/rhel7",
+        #:box => "jasonhorn/rhel7",
+        :box => "generic/rhel7",
     }
 ]
 
 $clean_ssh_sock = <<SCRIPT
-
-[ -a /home/vagrant/.ssh/ssh_auth_sock ] && rm -rf /home/vagrant/.ssh/ssh_auth_sock
-[ -a /root/.ssh/ssh_auth_sock ] && rm -rf /root/.ssh/ssh_auth_sock
+if [ -a /home/vagrant/.ssh/ssh_auth_sock ];then
+  rm -rf /home/vagrant/.ssh/ssh_auth_sock
+elif [ -a /root/.ssh/ssh_auth_sock ] ; then
+  rm -rf /root/.ssh/ssh_auth_sock
+fi
 SCRIPT
 
-#required_plugins = %w( vagrant-env vagrant-hostmanager vagrant-vbguest vagrant-registration)
-#required_plugins.each do |plugin|
-#    exec "vagrant plugin install #{plugin};vagrant #{ARGV.join(" ")}" unless Vagrant.has_plugin? plugin || ARGV[0] == 'plugin'
-#end
+$rhsm_script = %{
+if ! subscription-manager status; then
+  #sudo subscription-manager register --username=rhn-gps-jhorn  --password=d70fyarRH
+  sudo subscription-manager register --username #{ENV['SUB_USER']} --password #{ENV['SUB_PASS']}
+  sudo subscription-manager attach --pool #{ENV['POOLID']}
+  sudo subscription-manager repos --disable rhel-7-server-htb-rpms
+fi
+}
+
+required_plugins = %w( vagrant-env vagrant-hostmanager vagrant-vbguest vagrant-registration)
+required_plugins.each do |plugin|
+  exec "vagrant plugin install #{plugin};vagrant #{ARGV.join(" ")}" unless Vagrant.has_plugin? plugin || ARGV[0] == 'plugin'
+end
 
 Vagrant.configure(2) do |config|
   boxes.each do |opts|
@@ -48,38 +60,34 @@ Vagrant.configure(2) do |config|
     config.hostmanager.manage_guest = true
     config.hostmanager.include_offline = true
 
-    # Network
-    config.vm.synced_folder opts[:localdir], opts[:share], type: "virtualbox"
+    # Network #, type: "virtualbox"
+    config.vm.synced_folder opts[:localdir], opts[:share]  #, type: "virtualbox"
     config.vm.network 'private_network', ip: opts[:eth1]
 #    config.vm.network :forwarded_port, guest: 443, host: opts[:port]
 
+    #config.ssh.username = 'cloud-user'
     # rhel box
     #rhel_string = "rhel redhat"
     config.vm.box = opts[:box]
-    if opts[:box].include? 'rhel'
+    #if opts[:box].include? 'rhel'
       # orgi ID / activation-key
-	    config.registration.username = ENV['SUB_USER']
-	    config.registration.password = ENV['SUB_PASS']
-	    config.registration.pools    = ENV['POOLID']
-      config.registration.unregister_on_halt = false
-    end
-#   TODO: AddRHN REPOSlist
-#         subscription-manager repos --enable=rhel-7-server-optional-rpms --enable=rhel-7-server-rh-common-rpms
-#         rhel-7-server-optional-fastrack-rpms
-#Repo ID:   rhel-7-server-ansible-2.4-rpms
-#Repo ID:   rhel-7-fast-datapath-rpms
-#Repo ID:   rhel-7-server-extras-rpms
-#Repo ID:   rhel-7-server-ose-3.6-rpms
-#Repo ID:   rhel-7-server-rpms
-#         install git wget tmux vim
-#         ~/.tmux.conf
-#         update bashrc with ssh-agent /vagrant/keys/*.priv
-#         ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
-#
-#
-     config.vm.provision "shell", path: "setup.sh"
-     config.vm.provision "shell", inline: $clean_ssh_sock, run: "always"
-
+	  #config.registration.username = ENV['SUB_USER']
+	  #config.registration.password = ENV['SUB_PASS']
+	  #config.registration.pools    = ENV['POOLID']
+ 	  config.registration.username = 'rhn-gps-jhorn'
+ 	  config.registration.password = 'd70fyarRH'
+ 	  config.registration.pools    = '8a85f98c60c2c2b40160c32445b41b29'
+    config.registration.unregister_on_halt = false
+    #end
+    config.vm.provision "shell", inline: $clean_ssh_sock, run: "always"
+    config.vm.provision "shell", inline: $rhsm_script, run: "always"
+    config.vm.provision "shell", path: "setup.sh"
+#    config.trigger.before :destroy do |trigger|
+#      trigger.warn = "Unregistering from RHSM"
+      #trigger.run_remote "sudo subscription-manager unregister"
+#      trigger.run_remote =  {inline: "sudo subscription-manager unregister"}
+      #trigger.on_error =  "Something went wrong, please remove the machine manually from https://access.redhat.com/management/subscriptions"
+#    end
 #    # Ansible Tower configuration
 #    config.vm.provision "ansible" do |ansible|
 #        ansible.playbook = "playbook.yaml"
