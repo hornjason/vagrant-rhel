@@ -74,6 +74,10 @@ EOF
 }
 
 function setup_vimrc {
+https://github.com/drm/jinja2-lint.git
+  if [ ! -d "${1}/jinja2-lint" ] ; then
+    git clone https://github.com/drm/jinja2-lint.git
+    sudo cp "${1}/jinja2-lint/j2lint.py" /usr/local/bin/
   if [ ! -d "${1}/.vim/bundle/Vundle.vim" ] ; then
     git clone https://github.com/VundleVim/Vundle.vim.git ${1}/.vim/bundle/Vundle.vim
   fi
@@ -97,7 +101,7 @@ Plugin 'pearofducks/ansible-vim'
 call vundle#end()
 
 syntax on
-au BufRead,BufNewFile *.y*ml set filetype=ansible
+au BufRead,BufNewFile *.y?ml set filetype=ansible
 autocmd FileType yaml setlocal ai ts=2 sw=2 et
 
 
@@ -110,9 +114,6 @@ set softtabstop=2
 set expandtab
 set autoindent
 set background=dark
-let g:solarized_termcolors=256
-let g:solarized_termtrans=1
-colorscheme solarized
 EOF
 
 }
@@ -121,6 +122,16 @@ function setup_sudo {
   cat > /etc/sudoers.d/${2} <<EOF
 ${2}        ALL=(ALL)       NOPASSWD: ALL
 EOF
+}
+
+function setup_zsh {
+   mkdir ${1}/.fonts/
+   mkdir -p ${1}/.config/fontconfig/conf.d
+   cd ${1}
+   wget https://github.com/powerline/powerline/raw/develop/font/PowerlineSymbols.otf
+   wget https://github.com/powerline/powerline/raw/develop/font/10-powerline-symbols.conf  -O ${1}/.config/fontconfig/conf.d/10-powerline-symbols.conf
+   mv PowerlineSymbols.otf ${1}/.fonts
+   sed -i 's/^ZSH_THEME.*$/ZSH_THEME=agnoster/g' ${1}/.zshrc
 }
 
 ###############
@@ -133,5 +144,6 @@ for user in ${USERS};do
   setup_tmux ${home} ${user}
   setup_vimrc ${home} ${user}
   setup_sudo ${home} ${user}
+  setup_zsh ${home} ${user}
 done
 ###############
