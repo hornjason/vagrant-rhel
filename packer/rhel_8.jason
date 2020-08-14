@@ -1,0 +1,49 @@
+{
+  "builders": [
+    {
+      "boot_command": [
+        "<esc><wait>",
+        "vmlinuz initrd=initrd.img inst.geoloc=0 rd.driver.blacklist=dm-multipath net.ifnames=0 biosdevname=0 ",
+        "ks=http://{{.HTTPIP}}:{{.HTTPPort}}/vmware-ks.cfg",
+        "<enter>"
+      ],
+      "memory": "2048",
+      "boot_wait": "5s",
+      "disk_size": "30000",
+      "disk_adapter_type": "scsi",
+      "guest_os_type": "rhel8-64",
+      "http_directory": "http",
+      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
+      "iso_url": "{{user `iso_url`}}",
+      "shutdown_command": "echo 'kopicloud' | sudo -S /sbin/halt -h -p",
+      "ssh_password": "kopicloud",
+      "ssh_timeout": "20m",
+      "ssh_username": "kopicloud",
+      "tools_upload_flavor": "linux",
+      "tools_upload_path": "/tmp/vmware_tools_{{.Flavor}}.iso",
+      "type": "vmware-iso",
+      "version": "13",
+      "vm_name": "{{user `vm_name`}}",
+      "vmdk_name": "{{user `vm_name`}}",
+      "vmx_remove_ethernet_interfaces": "true",
+      "headless": "true"
+    }
+  ],
+  "provisioners": [
+    {
+      "execute_command": "echo 'kopicloud' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+      "scripts": [
+        "scripts/vmware.sh",
+        "scripts/sshd.sh",
+        "scripts/cleanup.sh"
+      ],
+      "type": "shell"
+    }
+  ],
+  "variables": {
+    "iso_checksum": "7fdfed9c7cced4e526a362e64ed06bcdc6ce0394a98625a40e7d05db29bf7b86",
+    "iso_checksum_type": "sha256",
+    "iso_url": "../iso/rhel-8.2-x86_64-dvd.iso",
+    "vm_name": "rhel8-packer"
+  }
+}
