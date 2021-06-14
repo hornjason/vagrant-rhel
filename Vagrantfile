@@ -71,13 +71,10 @@ Vagrant.configure(2) do |config|
     config.vm.box = opts[:box]
     #if opts[:box].include? 'rhel'
       # orgi ID / activation-key
-	  #config.registration.username = ENV['SUB_USER']
-	  #config.registration.password = ENV['SUB_PASS']
-	  #config.registration.pools    = ENV['POOLID']
- 	  config.registration.username = 'rhn-gps-jhorn'
- 	  config.registration.password = 'd70fyarRH'
- 	  config.registration.pools    = '8a85f98c60c2c2b40160c32445b41b29'
-    config.registration.unregister_on_halt = false
+	  config.registration.username = ENV['SUB_USER']
+	  config.registration.password = ENV['SUB_PASS']
+	  config.registration.pools    = ENV['POOLID']
+
     #end
     config.vm.provision "shell", inline: $clean_ssh_sock, run: "always"
     config.vm.provision "shell", inline: $rhsm_script, run: "always"
