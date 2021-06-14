@@ -29,7 +29,6 @@ SCRIPT
 
 $rhsm_script = %{
 if ! subscription-manager status; then
-  #sudo subscription-manager register --username=rhn-gps-jhorn  --password=d70fyarRH
   sudo subscription-manager register --username #{ENV['SUB_USER']} --password #{ENV['SUB_PASS']}
   sudo subscription-manager attach --pool #{ENV['POOLID']}
   sudo subscription-manager repos --disable rhel-7-server-htb-rpms
